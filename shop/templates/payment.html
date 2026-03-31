@@ -1,0 +1,30 @@
+<button id="pay-btn">Pay Now</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Pathak Fashion",
+    "description": "Order Payment",
+    "order_id": "{{ order_id }}",
+
+    "handler": function (response){
+        alert("Payment Successful!");
+        window.location.href = "/success/";
+    },
+
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('pay-btn').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>

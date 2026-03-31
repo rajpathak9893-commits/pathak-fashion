@@ -1,0 +1,29 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<div style="text-align:center; padding:80px;">
+
+    <h1 style="color:green;">✅ Order Placed Successfully!</h1>
+
+    {% if order %}
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>Product:</strong> {{ order.product.product_name }}</p>
+        <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+        <p><strong>Total:</strong> ₹{{ order.total_price }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+    {% endif %}
+
+    <br><br>
+
+    <a href="{% url 'orders' %}" style="padding:10px 20px; background:black; color:white; text-decoration:none;">
+        View My Orders
+    </a>
+
+    <a href="{% url 'shop' %}" style="padding:10px 20px; background:#b8965a; color:white; text-decoration:none; margin-left:10px;">
+        Continue Shopping
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,468 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-light: #f0d060;
+    --gold-pale: #fdf8e8;
+    --navy: #0b1c3d;
+    --navy-mid: #1a3260;
+    --white: #ffffff;
+    --grey-bg: #f5f6fa;
+    --grey-text: #6b7280;
+    --shadow: 0 4px 24px rgba(11,28,61,0.09);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { background: var(--grey-bg); font-family: 'DM Sans', sans-serif; }
+
+  .db-wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 36px 20px 60px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .topbar-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    color: var(--navy);
+  }
+
+  .topbar-left p {
+    color: var(--grey-text);
+    font-size: 0.9rem;
+    margin-top: 3px;
+  }
+
+  /* ── PROFILE CARD ── */
+  .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--white);
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 2px solid var(--gold);
+  }
+
+  .profile-info strong {
+    display: block;
+    color: var(--navy);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .profile-info span {
+    font-size: 0.78rem;
+    color: var(--grey-text);
+  }
+
+  /* ── STATS ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .stat-box {
+    background: var(--white);
+    padding: 24px 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .stat-box:hover { transform: translateY(-3px); }
+
+  .stat-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .stat-box .stat-icon {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+
+  .stat-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .stat-box p {
+    color: var(--grey-text);
+    font-size: 0.82rem;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── CHART ── */
+  .chart-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 24px;
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chart-wrap { height: 220px; position: relative; }
+
+  /* ── SEARCH BAR ── */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .search-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .search-input-wrap input {
+    width: 100%;
+    padding: 11px 16px 11px 42px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input-wrap input:focus {
+    border-color: var(--gold);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grey-text);
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  .filter-select {
+    padding: 11px 16px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: var(--white);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .filter-select:focus { border-color: var(--gold); }
+
+  /* ── ORDER CARDS ── */
+  .orders { display: flex; flex-direction: column; gap: 14px; }
+
+  .order-card {
+    background: var(--white);
+    padding: 18px 22px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    text-decoration: none;
+    transition: transform 0.18s, box-shadow 0.18s;
+    border-left: 4px solid transparent;
+  }
+
+  .order-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 6px 28px rgba(11,28,61,0.13);
+    border-left-color: var(--gold);
+  }
+
+  .order-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .order-meta {
+    font-size: 0.8rem;
+    color: var(--grey-text);
+    margin-top: 3px;
+  }
+
+  .order-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .order-price {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .order-qty {
+    font-size: 0.82rem;
+    color: var(--grey-text);
+  }
+
+  /* ── STATUS BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-pending   { background: #fff7e0; color: #b45309; }
+  .badge-delivered { background: #dcfce7; color: #166534; }
+  .badge-cancelled { background: #fee2e2; color: #991b1b; }
+  .badge-processing{ background: #e0f2fe; color: #0369a1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--grey-text);
+    font-size: 0.95rem;
+  }
+
+  .empty-state span { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 600px) {
+    .topbar { flex-direction: column; align-items: flex-start; }
+    .order-right { gap: 10px; }
+  }
+</style>
+
+<div class="db-wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>My Dashboard</h1>
+      <p>Track your orders and spending at a glance</p>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+      <div class="avatar">{{ request.user.username|first|upper }}</div>
+      <div class="profile-info">
+        <strong>{{ request.user.username }}</strong>
+        <span>{{ request.user.email }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-icon">🛒</div>
+      <h3>{{ total_orders }}</h3>
+      <p>Total Orders</p>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">💰</div>
+      <h3>₹{{ total_spent }}</h3>
+      <p>Total Spent</p>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">✅</div>
+      <h3>{{ delivered_count|default:"0" }}</h3>
+      <p>Delivered</p>
+    </div>
+    <div class="stat-box">
+      <div class="stat-icon">⏳</div>
+      <h3>{{ pending_count|default:"0" }}</h3>
+      <p>Pending</p>
+    </div>
+  </div>
+
+  <!-- SPENDING CHART -->
+  <div class="chart-card">
+    <div class="section-title">📊 Spending Overview</div>
+    <div class="chart-wrap">
+      <canvas id="spendingChart"></canvas>
+    </div>
+  </div>
+
+  <!-- ORDERS SECTION -->
+  <div class="section-title" style="margin-bottom:16px;">🧾 My Orders</div>
+
+  <!-- SEARCH + FILTER -->
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search by product name…" oninput="filterOrders()">
+    </div>
+    <select class="filter-select" id="statusFilter" onchange="filterOrders()">
+      <option value="">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="processing">Processing</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+
+  <!-- ORDER CARDS -->
+  <div class="orders" id="orderList">
+
+    {% for order in orders %}
+    <a href="{% url 'order_detail' order.id %}" class="order-card"
+       data-name="{{ order.product.Product_name|lower }}"
+       data-status="{{ order.status|lower }}">
+
+      <div>
+        <div class="order-name">{{ order.product.Product_name }}</div>
+        <div class="order-meta">Order #{{ order.id }}</div>
+      </div>
+
+      <div class="order-right">
+        <span class="order-qty">Qty: {{ order.quantity }}</span>
+        <span class="order-price">₹{{ order.total_price }}</span>
+        <span class="badge
+          {% if order.status|lower == 'delivered' %}badge-delivered
+          {% elif order.status|lower == 'cancelled' %}badge-cancelled
+          {% elif order.status|lower == 'processing' %}badge-processing
+          {% else %}badge-pending{% endif %}">
+          {{ order.status }}
+        </span>
+      </div>
+
+    </a>
+    {% empty %}
+    <div class="empty-state">
+      <span>📦</span>
+      Abhi koi order nahi hai. Kuch order karo!
+    </div>
+    {% endfor %}
+
+  </div>
+
+</div>
+
+<script>
+  /* ── SEARCH & FILTER ── */
+//   function filterOrders() {
+//     const q = document.getElementById('searchInput').value.toLowerCase();
+//     const status = document.getElementById('statusFilter').value.toLowerCase();
+//     document.querySelectorAll('#orderList .order-card').forEach(card => {
+//       const name = card.dataset.name || '';
+//       const st   = card.dataset.status || '';
+//       const matchName   = name.includes(q);
+    //   const matchStatus = !status || st === status;
+      card.style.display = (matchName && matchStatus) ? '' : 'none';
+    // });
+//   }
+
+  /* ── CHART ── */
+//   const ctx = document.getElementById('spendingChart').getContext('2d');
+
+  // Chart data from Django template
+//   const chartLabels = [{% for order in orders %}"{{ order.product.Product_name|truncatechars:12 }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+//   const chartData   = [{% for order in orders %}{{ order.total_price }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartLabels.length ? chartLabels : ['No Orders'],
+      datasets: [{
+        label: 'Amount Spent (₹)',
+        data: chartData.length ? chartData : [0],
+        backgroundColor: 'rgba(212,175,55,0.25)',
+        borderColor: '#d4af37',
+        borderWidth: 2,
+        borderRadius: 8,
+        hoverBackgroundColor: 'rgba(212,175,55,0.5)',
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => '₹' + ctx.parsed.y
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans' }, color: '#6b7280' } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { family: 'DM Sans' }, color: '#6b7280', callback: v => '₹' + v } }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

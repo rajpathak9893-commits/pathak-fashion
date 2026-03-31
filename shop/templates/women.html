@@ -1,0 +1,338 @@
+{% extends 'master.html' %}
+
+{% block title %}Women Collection | Pathak Fashion{% endblock %}
+
+{% block content %}
+
+<style>
+body { background: linear-gradient(to right, #f7f8fc, #eef1f7); }
+
+/* SLIDER */
+.slider {
+  height: 65vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  animation: womenSlide 15s infinite;
+}
+.slider::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+}
+.slider-content { z-index: 2; animation: fadeUp 0.8s ease; }
+.slider h2 { font-size: 48px; font-weight: 700; letter-spacing: 1px; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
+.slider p  { font-size: 17px; margin-top: 10px; opacity: 0.88; }
+
+@keyframes womenSlide {
+  0%   { background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1400'); }
+  50%  { background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1400'); }
+  100% { background-image: url('https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=1400'); }
+}
+
+/* TITLE */
+.title { text-align: center; font-size: 30px; font-weight: 700; margin: 32px 0 6px; color: #0b1c3d; }
+.subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 24px; }
+
+/* FILTER */
+.filters {
+  text-align: center;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 20px;
+}
+.filters a {
+  padding: 8px 22px;
+  border-radius: 25px;
+  text-decoration: none;
+  background: transparent;
+  color: #0b1c3d;
+  border: 1.5px solid #d4af37;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+.filters a:hover, .filters a.active {
+  background: #d4af37;
+  color: #0b1c3d;
+  transform: scale(1.04);
+}
+
+/* PRODUCTS GRID */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  padding: 10px 40px 60px;
+}
+
+/* CARD */
+.card {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  animation: fadeUp 0.5s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.16);
+}
+
+/* IMAGE */
+.card-img-wrap { overflow: hidden; height: 260px; }
+.card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+  display: block;
+}
+.card:hover img { transform: scale(1.07); }
+
+/* WISHLIST */
+.wishlist {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: white;
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  text-decoration: none;
+  font-size: 18px;
+  color: #ccc;
+  transition: transform 0.3s, color 0.3s;
+  z-index: 3;
+}
+.wishlist:hover { transform: scale(1.15); color: #e63946; }
+.wishlist.active { color: #e63946; }
+
+/* BADGES */
+.badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  color: white;
+  z-index: 3;
+}
+.new  { background: #2ecc71; }
+.sale { background: #f39c12; }
+.best { background: #e63946; }
+
+/* CARD BODY */
+.card-body { padding: 14px 16px 16px; text-align: center; }
+.card-body h4 {
+  font-size: 15px; font-weight: 600;
+  color: #0b1c3d; margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.price {
+  color: #e63946;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+
+/* BUTTONS */
+.card-btns { display: flex; gap: 8px; }
+.btn {
+  flex: 1;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+  text-align: center;
+}
+.cart-btn { background: #ffd700; color: #0b1c3d; }
+.cart-btn:hover { background: #0b1c3d; color: white; transform: scale(1.03); }
+.buy-btn  { background: #0b1c3d; color: white; }
+.buy-btn:hover  { background: #d4af37; color: #0b1c3d; transform: scale(1.03); }
+
+/* QUICK VIEW */
+.quick-btn {
+  position: absolute;
+  bottom: -40px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: white;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: bottom 0.3s, opacity 0.3s;
+  opacity: 0;
+  z-index: 3;
+  white-space: nowrap;
+}
+.card:hover .quick-btn { bottom: 80px; opacity: 1; }
+
+/* POPUP */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.popup.show { display: flex; }
+.popup-content {
+  background: white;
+  border-radius: 18px;
+  width: 340px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: popUp 0.3s ease;
+}
+.popup-content img { width: 100%; height: 280px; object-fit: cover; }
+.popup-body { padding: 18px 20px 20px; }
+.popup-body h3 { font-size: 17px; color: #0b1c3d; margin-bottom: 6px; }
+.close-btn {
+  float: right; cursor: pointer;
+  font-size: 22px; color: #888;
+  background: none; border: none;
+  font-family: sans-serif;
+  transition: color 0.2s;
+}
+.close-btn:hover { color: #e63946; }
+
+.empty-state { text-align: center; padding: 80px 20px; color: #888; grid-column: 1/-1; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .products { padding: 20px; gap: 18px; }
+  .slider h2 { font-size: 30px; }
+}
+</style>
+
+<!-- SLIDER -->
+<section class="slider">
+  <div class="slider-content">
+    <h2>👗 Women Collection</h2>
+    <p>Elegant ethnic wear for every occasion</p>
+  </div>
+</section>
+
+<!-- TITLE -->
+<h2 class="title">Women's Collection</h2>
+<p class="subtitle">Handpicked styles just for you</p>
+
+<!-- FILTER -->
+<div class="filters">
+  <a href="?" {% if not request.GET.sub %}class="active"{% endif %}>All</a>
+  <a href="?sub=lehenga" {% if request.GET.sub == 'lehenga' %}class="active"{% endif %}>Lehenga</a>
+  <a href="?sub=kurti"   {% if request.GET.sub == 'kurti'   %}class="active"{% endif %}>Kurti</a>
+  <a href="?sub=saree"   {% if request.GET.sub == 'saree'   %}class="active"{% endif %}>Saree</a>
+  <a href="?sub=gown"    {% if request.GET.sub == 'gown'    %}class="active"{% endif %}>Gown</a>
+</div>
+
+<!-- PRODUCTS -->
+<div class="products">
+
+  {% for i in database_records %}
+  <div class="card">
+
+    <a href="{% url 'wishlist' i.id %}"
+       class="wishlist {% if i.id in wishlist_ids %}active{% endif %}">♥</a>
+
+    {% if i.is_new %}<div class="badge new">New</div>{% endif %}
+    {% if i.is_best %}<div class="badge best">Bestseller</div>{% endif %}
+    {% if i.discount > 0 %}<div class="badge sale">-{{ i.discount }}%</div>{% endif %}
+
+    <a href="{% url 'product_detail' i.id %}">
+      <div class="card-img-wrap">
+        <img src="{{ i.image.url }}" alt="{{ i.product_name }}" loading="lazy">
+      </div>
+    </a>
+
+    <button class="quick-btn"
+      onclick="openPopup('{{ i.image.url }}', '{{ i.product_name }}', '{{ i.price }}')">
+      Quick View
+    </button>
+
+    <div class="card-body">
+      <a href="{% url 'product_detail' i.id %}" style="text-decoration:none;">
+        <h4>{{ i.product_name }}</h4>
+      </a>
+      <div class="price">₹{{ i.price }}</div>
+      <div class="card-btns">
+        <form action="{% url 'add_to_cart' i.id %}" method="POST" style="flex:1;">
+          {% csrf_token %}
+          <button type="submit" class="btn cart-btn" style="width:100%;">🛒 Add</button>
+        </form>
+        <form action="{% url 'buy_now' i.id %}" method="POST" style="flex:1;">
+          {% csrf_token %}
+          <button type="submit" class="btn buy-btn" style="width:100%;">⚡ Buy</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+  {% empty %}
+  <div class="empty-state"><p>😕 No products found in this category.</p></div>
+  {% endfor %}
+
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup" onclick="closePopupOutside(event)">
+  <div class="popup-content">
+    <img id="popup-img" src="" alt="">
+    <div class="popup-body">
+      <button class="close-btn" onclick="closePopup()">×</button>
+      <h3 id="popup-name"></h3>
+      <div class="price" id="popup-price"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openPopup(img, name, price) {
+  document.getElementById("popup-img").src = img;
+  document.getElementById("popup-name").innerText = name;
+  document.getElementById("popup-price").innerText = "₹" + price;
+  document.getElementById("popup").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closePopup() {
+  document.getElementById("popup").classList.remove("show");
+  document.body.style.overflow = "";
+}
+function closePopupOutside(e) {
+  if (e.target.id === "popup") closePopup();
+}
+</script>
+
+{% endblock %}

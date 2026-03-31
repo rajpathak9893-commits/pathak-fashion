@@ -1,0 +1,499 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --gold:#b8965a;
+  --gold-light:#d4af7a;
+  --gold-pale:#f0e6d0;
+  --ink:#0e0e0e;
+  --ink-soft:#2a2a2a;
+  --cream:#faf8f5;
+  --cream-dark:#f0ece4;
+  --stone:#8a8276;
+  --border:#ddd8cf;
+  --danger:#b85a4a;
+  --pending:#c4860a;
+  --shipped:#3a6fa8;
+  --delivered:#4a7c59;
+}
+
+body{
+  background:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* ── AMBIENT ── */
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(184,150,90,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 85% 80%, rgba(184,150,90,0.05) 0%, transparent 70%);
+}
+
+/* ── PAGE ── */
+.orders-page{
+  position:relative;z-index:1;
+  max-width:860px;
+  margin:0 auto;
+  padding:60px 40px;
+  opacity:0;
+  animation:fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── HEADER ── */
+.page-header{
+  text-align:center;
+  margin-bottom:48px;
+}
+
+.page-eyebrow{
+  font-size:11px;font-weight:500;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-bottom:14px;
+}
+
+.page-eyebrow::before,
+.page-eyebrow::after{
+  content:'';display:block;
+  width:40px;height:1px;background:var(--gold);
+}
+
+.page-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,5vw,52px);
+  font-weight:300;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+  line-height:1.1;
+}
+
+.order-count{
+  display:inline-block;
+  margin-top:10px;
+  font-size:13px;color:var(--stone);
+  letter-spacing:0.04em;
+}
+
+/* ── FILTER TABS ── */
+.filter-tabs{
+  display:flex;align-items:center;justify-content:center;
+  gap:4px;
+  margin-bottom:32px;
+  flex-wrap:wrap;
+}
+
+.filter-tab{
+  padding:8px 18px;
+  border-radius:2px;
+  border:1px solid var(--border);
+  background:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--stone);
+  cursor:pointer;
+  transition:all 0.25s ease;
+}
+
+.filter-tab:hover,
+.filter-tab.active{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:#fff;
+}
+
+/* ── ORDER CARD ── */
+.orders-list{display:flex;flex-direction:column;gap:14px;}
+
+.order-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:24px 28px;
+  display:grid;
+  grid-template-columns:64px 1fr auto;
+  gap:20px;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+  transition:box-shadow 0.3s ease, transform 0.3s ease;
+  opacity:0;
+  animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+.order-card:nth-child(1){animation-delay:0.05s;}
+.order-card:nth-child(2){animation-delay:0.12s;}
+.order-card:nth-child(3){animation-delay:0.19s;}
+.order-card:nth-child(4){animation-delay:0.26s;}
+.order-card:nth-child(5){animation-delay:0.33s;}
+.order-card:nth-child(n+6){animation-delay:0.38s;}
+
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* HIGHLIGHT for latest order */
+.order-card.latest{
+  border-color:rgba(184,150,90,0.4);
+  background:linear-gradient(135deg,rgba(184,150,90,0.03) 0%,#fff 60%);
+}
+
+.latest-badge{
+  position:absolute;top:0;right:0;
+  background:var(--gold);
+  color:#fff;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:4px 12px;
+  border-bottom-left-radius:4px;
+}
+
+/* LEFT ACCENT LINE */
+.order-card::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--gold);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+
+.order-card:hover{
+  box-shadow:0 8px 28px rgba(0,0,0,0.07);
+  transform:translateY(-2px);
+}
+
+.order-card:hover::before{transform:scaleY(1);}
+
+/* ORDER ICON */
+.order-icon{
+  width:64px;height:64px;
+  border-radius:3px;
+  background:var(--cream-dark);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  overflow:hidden;
+}
+
+.order-icon img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+
+.order-icon-placeholder{
+  font-size:26px;opacity:0.5;
+}
+
+/* ORDER INFO */
+.order-info{display:flex;flex-direction:column;gap:6px;}
+
+.order-product{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:400;
+  color:var(--ink);line-height:1.2;
+}
+
+.order-meta{
+  display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;
+}
+
+.order-meta-item{
+  font-size:12px;color:var(--stone);
+  display:flex;align-items:center;gap:5px;
+}
+
+.order-meta-item svg{opacity:0.5;}
+
+.order-id{
+  font-size:11px;color:var(--border);
+  letter-spacing:0.1em;
+  margin-top:2px;
+}
+
+/* STATUS BADGE */
+.status-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 12px;
+  border-radius:2px;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.status-badge .dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+
+/* Pending */
+.status-badge.pending{
+  background:rgba(196,134,10,0.09);
+  border:1px solid rgba(196,134,10,0.25);
+  color:var(--pending);
+}
+.status-badge.pending .dot{
+  background:var(--pending);
+  animation:blink 1.6s ease-in-out infinite;
+}
+
+/* Shipped */
+.status-badge.shipped{
+  background:rgba(58,111,168,0.09);
+  border:1px solid rgba(58,111,168,0.25);
+  color:var(--shipped);
+}
+.status-badge.shipped .dot{background:var(--shipped);}
+
+/* Delivered */
+.status-badge.delivered{
+  background:rgba(74,124,89,0.09);
+  border:1px solid rgba(74,124,89,0.25);
+  color:var(--delivered);
+}
+.status-badge.delivered .dot{background:var(--delivered);}
+
+/* Cancelled */
+.status-badge.cancelled{
+  background:rgba(184,90,74,0.08);
+  border:1px solid rgba(184,90,74,0.2);
+  color:var(--danger);
+}
+.status-badge.cancelled .dot{background:var(--danger);}
+
+@keyframes blink{
+  0%,100%{opacity:1;}50%{opacity:0.3;}
+}
+
+/* RIGHT SIDE */
+.order-right{
+  display:flex;flex-direction:column;align-items:flex-end;gap:12px;
+}
+
+.order-price{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:400;
+  color:var(--ink);letter-spacing:-0.02em;
+  white-space:nowrap;
+}
+
+.order-price span{
+  font-size:16px;color:var(--gold);font-weight:300;
+}
+
+.detail-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;
+  border:1px solid var(--border);
+  border-radius:2px;
+  background:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--stone);
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 0.25s ease;
+  white-space:nowrap;
+}
+
+.detail-btn:hover{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:#fff;
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(14,14,14,0.14);
+}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;
+  padding:80px 20px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:4px;
+}
+
+.empty-icon{font-size:52px;opacity:0.35;margin-bottom:20px;}
+
+.empty-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;
+  color:var(--ink);margin-bottom:10px;
+}
+
+.empty-sub{
+  font-size:14px;color:var(--stone);margin-bottom:28px;
+}
+
+.shop-link{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 28px;
+  background:var(--ink);color:#fff;
+  text-decoration:none;border-radius:2px;
+  font-size:12px;font-weight:500;
+  letter-spacing:0.14em;text-transform:uppercase;
+  transition:background 0.3s,transform 0.3s,box-shadow 0.3s;
+}
+
+.shop-link:hover{
+  background:var(--ink-soft);
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(14,14,14,0.15);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .orders-page{padding:40px 20px;}
+
+  .order-card{
+    grid-template-columns:48px 1fr;
+    grid-template-rows:auto auto;
+    gap:14px;
+  }
+
+  .order-icon{width:48px;height:48px;}
+
+  .order-right{
+    grid-column:1/-1;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    padding-top:12px;
+    border-top:1px solid var(--border);
+  }
+}
+</style>
+
+<div class="ambient"></div>
+
+<div class="orders-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <p class="page-eyebrow">Account</p>
+    <h1 class="page-title">My Orders</h1>
+    {% if orders %}
+    <span class="order-count">{{ orders|length }} order{% if orders|length != 1 %}s{% endif %} placed</span>
+    {% endif %}
+  </div>
+
+  {% if orders %}
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterOrders('all', this)">All</button>
+    <button class="filter-tab" onclick="filterOrders('pending', this)">Pending</button>
+    <button class="filter-tab" onclick="filterOrders('shipped', this)">Shipped</button>
+    <button class="filter-tab" onclick="filterOrders('delivered', this)">Delivered</button>
+  </div>
+
+  <!-- ORDERS LIST -->
+  <div class="orders-list" id="ordersList">
+
+    {% for order in orders %}
+    <div class="order-card {% if order.id == latest_order_id %}latest{% endif %}"
+         data-status="{{ order.status|lower }}">
+
+      {% if order.id == latest_order_id %}
+      <span class="latest-badge">New Order</span>
+      {% endif %}
+
+      <!-- ICON / IMAGE -->
+      <div class="order-icon">
+        {% if order.product.image %}
+        <img src="{{ order.product.image.url }}" alt="{{ order.product.Product_name }}">
+        {% else %}
+        <span class="order-icon-placeholder">📦</span>
+        {% endif %}
+      </div>
+
+      <!-- INFO -->
+      <div class="order-info">
+        <span class="order-product">{{ order.product.Product_name }}</span>
+        <div class="order-meta">
+          <span class="order-meta-item">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Qty: {{ order.quantity }}
+          </span>
+          <span class="order-meta-item">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Order #{{ order.id|stringformat:"05d" }}
+          </span>
+        </div>
+
+        <!-- STATUS -->
+        <div style="margin-top:4px;">
+          <span class="status-badge {{ order.status|lower }}">
+            <span class="dot"></span>
+            {{ order.status|title }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: PRICE + BUTTON -->
+      <div class="order-right">
+        <span class="order-price"><span>₹</span>{{ order.total_price }}</span>
+        <a href="{% url 'order_detail' order.id %}" class="detail-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          View Details
+        </a>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  {% else %}
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h2 class="empty-title">No orders yet</h2>
+    <p class="empty-sub">Your order history will appear here once you make a purchase.</p>
+    <a href="{% url 'shop' %}" class="shop-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Browse Collection
+    </a>
+  </div>
+
+  {% endif %}
+
+</div>
+
+<script>
+/* ── STATUS FILTER ── */
+function filterOrders(status, btn){
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.order-card').forEach(card => {
+    if(status === 'all' || card.dataset.status === status){
+      card.style.display = '';
+      card.style.animation = 'none';
+      void card.offsetWidth;
+      card.style.animation = 'cardIn 0.4s cubic-bezier(0.22,1,0.36,1) forwards';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
+{% endblock %}

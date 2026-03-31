@@ -1,0 +1,148 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<!-- 🔥 SLIDER HERO -->
+<section class="slider contact-slider">
+    <h2>Contact Us</h2>
+</section>
+
+<style>
+
+/* BODY */
+body{
+    background:linear-gradient(to right,#f7f8fc,#eef1f7);
+}
+
+/* SLIDER */
+.slider{
+    height:60vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:40px;
+    font-weight:600;
+    text-align:center;
+    background-size:cover;
+    background-position:center;
+    position:relative;
+}
+
+/* OVERLAY */
+.slider::after{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    top:0;
+    left:0;
+}
+
+.slider h2{
+    z-index:2;
+}
+
+/* CONTACT SLIDER IMAGES */
+.contact-slider{
+    animation:contactSlide 15s infinite;
+}
+
+@keyframes contactSlide{
+0%{background:url('https://images.unsplash.com/photo-1521791136064-7986c2920216') center/cover;}
+50%{background:url('https://images.unsplash.com/photo-1556740749-887f6717d7e4') center/cover;}
+100%{background:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f') center/cover;}
+}
+
+/* GRID */
+.contact-container{
+max-width:1200px;
+margin:auto;
+padding:60px 20px;
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:40px;
+}
+
+/* IMAGE */
+.contact-image img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:15px;
+}
+
+/* CARD */
+.card{
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 12px 30px rgba(0,0,0,0.12);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 20px 50px rgba(0,0,0,0.2);
+}
+
+/* FORM */
+form input, form textarea{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+
+form button{
+width:100%;
+padding:10px;
+background:#0b1c3d;
+color:white;
+border:none;
+border-radius:20px;
+transition:0.3s;
+}
+
+form button:hover{
+background:#ffd700;
+color:#0b1c3d;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+.contact-container{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+
+<section class="contact-container">
+
+<div class="contact-image">
+<img src="https://images.unsplash.com/photo-1521791136064-7986c2920216">
+</div>
+
+<div class="card">
+<h3>Contact Info</h3>
+<p>Email: pathakfashion@gmail.com</p>
+<p>Phone: +91 9876543210</p>
+</div>
+
+<form method="POST" class="card">
+{% csrf_token %}
+
+<input type="text" placeholder="Name">
+<input type="email" placeholder="Email">
+<textarea placeholder="Message"></textarea>
+
+<button>Send</button>
+
+</form>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+<h2 style="text-align:center;">Checkout</h2>
+
+<div style="width:80%; margin:auto;">
+
+{% for item in items %}
+<p>{{ item.product.product_name }} - ₹{{ item.product.price }} × {{ item.quantity }}</p>
+{% endfor %}
+
+<h3>Total: ₹{{ total }}</h3>
+
+<br>
+
+<form action="{% url 'place_order' %}" method="POST">
+    {% csrf_token %}
+    <button style="
+        padding:12px 25px;
+        background:#0b1c3d;
+        color:white;
+        border:none;
+        border-radius:25px;
+        font-weight:bold;
+        cursor:pointer;
+    ">
+        🧾 Place Order (Cash on Delivery)
+    </button>
+</form>
+
+</div>

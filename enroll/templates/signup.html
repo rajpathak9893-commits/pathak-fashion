@@ -1,0 +1,191 @@
+{% extends 'master.html' %}
+{% block title %}Register | Pathak Fashion{% endblock %}
+
+{% block content %}
+
+<style>
+
+.signup-container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:80vh;
+}
+
+.signup-box{
+background:white;
+width:400px;
+padding:35px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+text-align:center;
+animation:fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+.signup-box h2{
+margin-bottom:20px;
+color:#0b1c3d;
+}
+
+.signup-box input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ccc;
+outline:none;
+transition:0.3s;
+}
+
+.signup-box input:focus{
+border-color:#d4af37;
+box-shadow:0 0 5px rgba(212,175,55,0.4);
+}
+
+/* Password box */
+.password-box{
+position:relative;
+}
+
+.password-box span{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:13px;
+color:#555;
+}
+
+/* Button */
+.signup-btn{
+width:100%;
+padding:12px;
+background:#d4af37;
+border:none;
+border-radius:25px;
+color:#0b1c3d;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.signup-btn:hover{
+background:#0b1c3d;
+color:white;
+}
+
+/* Error */
+.error{
+color:red;
+font-size:13px;
+margin-bottom:10px;
+text-align:left;
+}
+
+/* Success */
+.success{
+color:green;
+font-size:13px;
+margin-bottom:10px;
+}
+
+/* Login link */
+.login-link{
+margin-top:15px;
+font-size:14px;
+}
+
+.login-link a{
+color:#0b1c3d;
+font-weight:bold;
+text-decoration:none;
+}
+
+.login-link a:hover{
+text-decoration:underline;
+}
+
+</style>
+
+<div class="signup-container">
+
+<div class="signup-box">
+
+<h2>Create Account</h2>
+
+<form method="POST" onsubmit="return validateForm()">
+{% csrf_token %}
+
+<!-- Django Errors -->
+{% if form.errors %}
+<div class="error">
+{{ form.errors }}
+</div>
+{% endif %}
+
+<input type="text" id="username" name="username" placeholder="Username" required>
+
+<input type="email" id="email" name="email" placeholder="Email" required>
+
+<div class="password-box">
+<input type="password" id="password1" name="password1" placeholder="Password" required>
+<span onclick="togglePassword('password1')">Show</span>
+</div>
+
+<div class="password-box">
+<input type="password" id="password2" name="password2" placeholder="Confirm Password" required>
+<span onclick="togglePassword('password2')">Show</span>
+</div>
+
+<div id="error-msg" class="error"></div>
+
+<button type="submit" class="signup-btn">Register</button>
+
+</form>
+
+<div class="login-link">
+Already have an account? 
+<a href="{% url 'login' %}">Login</a>
+</div>
+
+</div>
+
+</div>
+
+<!-- JavaScript -->
+<script>
+
+// Show/Hide Password
+function togglePassword(id){
+    let field = document.getElementById(id);
+    field.type = field.type === "password" ? "text" : "password";
+}
+
+// Form Validation
+function validateForm(){
+    let pass1 = document.getElementById("password1").value;
+    let pass2 = document.getElementById("password2").value;
+    let error = document.getElementById("error-msg");
+
+    if(pass1.length < 6){
+        error.innerHTML = "Password must be at least 6 characters";
+        return false;
+    }
+
+    if(pass1 !== pass2){
+        error.innerHTML = "Passwords do not match";
+        return false;
+    }
+
+    return true;
+}
+
+</script>
+
+{% endblock %}

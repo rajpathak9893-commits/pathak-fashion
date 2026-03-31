@@ -1,0 +1,249 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<style>
+
+/* 🔥 BACKGROUND FULL ANIMATION */
+body{
+background:linear-gradient(-45deg,#0b1c3d,#1e3c72,#2a5298,#0b1c3d);
+background-size:400% 400%;
+animation:gradientMove 10s ease infinite;
+}
+
+/* 🔥 MOVING LIGHTS */
+body::before{
+content:"";
+position:fixed;
+width:300px;
+height:300px;
+background:rgba(255,215,0,0.2);
+border-radius:50%;
+top:10%;
+left:10%;
+filter:blur(80px);
+animation:move1 10s infinite alternate;
+}
+
+body::after{
+content:"";
+position:fixed;
+width:300px;
+height:300px;
+background:rgba(255,255,255,0.2);
+border-radius:50%;
+bottom:10%;
+right:10%;
+filter:blur(80px);
+animation:move2 12s infinite alternate;
+}
+
+/* 🔥 CENTER */
+.profile-container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:90vh;
+}
+
+/* 🔥 CARD */
+.profile-card{
+width:420px;
+padding:40px;
+border-radius:25px;
+text-align:center;
+position:relative;
+overflow:hidden;
+
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(20px);
+
+box-shadow:0 20px 60px rgba(0,0,0,0.3);
+animation:fadeUp 1s ease;
+}
+
+/* 🔥 ANIMATED BORDER */
+.profile-card::before{
+content:"";
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background:conic-gradient(#ffd700,transparent,#ffd700);
+animation:rotate 6s linear infinite;
+opacity:0.4;
+}
+
+.profile-card::after{
+content:"";
+position:absolute;
+inset:4px;
+background:rgba(255,255,255,0.1);
+border-radius:25px;
+z-index:1;
+}
+
+.profile-card *{
+position:relative;
+z-index:2;
+}
+
+/* 🔥 IMAGE */
+.profile-img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:15px;
+border:3px solid #ffd700;
+box-shadow:0 0 20px rgba(255,215,0,0.7);
+animation:float 3s ease-in-out infinite;
+}
+
+/* TEXT */
+.profile-card h2{
+color:white;
+margin-bottom:20px;
+}
+
+/* INFO */
+.profile-info{
+margin:10px 0;
+padding:12px;
+border-radius:12px;
+background:rgba(255,255,255,0.2);
+color:white;
+transition:0.3s;
+}
+
+.profile-info:hover{
+transform:scale(1.05);
+}
+
+/* BUTTONS */
+.btn-group{
+margin-top:25px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+}
+
+.profile-btn{
+padding:10px 18px;
+border-radius:25px;
+text-decoration:none;
+font-weight:bold;
+transition:0.3s;
+}
+
+/* COLORS */
+.dashboard-btn{
+background:#ffd700;
+color:#0b1c3d;
+}
+
+.dashboard-btn:hover{
+background:white;
+transform:scale(1.08);
+}
+
+.edit-btn{
+background:white;
+color:#0b1c3d;
+}
+
+.edit-btn:hover{
+background:#ffd700;
+transform:scale(1.08);
+}
+
+.logout-btn{
+background:#e63946;
+color:white;
+}
+
+.logout-btn:hover{
+background:#c1121f;
+transform:scale(1.08);
+}
+
+/* 🔥 ANIMATIONS */
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+@keyframes move1{
+0%{transform:translate(0,0);}
+100%{transform:translate(100px,50px);}
+}
+
+@keyframes move2{
+0%{transform:translate(0,0);}
+100%{transform:translate(-100px,-50px);}
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(50px);}
+to{opacity:1;}
+}
+
+@keyframes rotate{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+}
+
+</style>
+
+<div class="profile-container">
+
+<div class="profile-card">
+
+<!-- 🔥 SAFE PROFILE IMAGE -->
+{% if request.user.profile and request.user.profile.image %}
+<img src="{{ request.user.profile.image.url }}" class="profile-img">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=ffd700&color=0b1c3d&size=128" class="profile-img">
+{% endif %}
+
+<h2>{{ request.user.username }} 👋</h2>
+
+<div class="profile-info">
+<strong>Username:</strong> {{ request.user.username }}
+</div>
+
+<div class="profile-info">
+<strong>Email:</strong> {{ request.user.email }}
+</div>
+
+<div class="btn-group">
+
+<a href="/" class="profile-btn dashboard-btn">🏠 Home</a>
+
+<a href="{% url 'dashboard' %}" class="profile-btn dashboard-btn">
+📦 Orders
+</a>
+
+<a href="{% url 'edit_profile' %}" class="profile-btn edit-btn">
+✏️ Edit
+</a>
+
+<a href="{% url 'logout' %}" class="profile-btn logout-btn">
+🚪 Logout
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

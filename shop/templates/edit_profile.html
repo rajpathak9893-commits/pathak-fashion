@@ -1,0 +1,420 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --gold:#b8965a;
+  --gold-light:#d4af7a;
+  --gold-pale:#f0e6d0;
+  --ink:#0e0e0e;
+  --ink-soft:#2a2a2a;
+  --cream:#faf8f5;
+  --cream-dark:#f0ece4;
+  --stone:#8a8276;
+  --border:#ddd8cf;
+  --danger:#b85a4a;
+}
+
+body{
+  background:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* ── AMBIENT ── */
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(184,150,90,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 85% 80%, rgba(184,150,90,0.05) 0%, transparent 70%);
+}
+
+/* ── PAGE ── */
+.profile-page{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 24px;
+}
+
+/* ── CARD ── */
+.profile-card{
+  width:100%;
+  max-width:520px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:48px 44px;
+  opacity:0;
+  animation:fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+  position:relative;
+  overflow:hidden;
+}
+
+/* TOP GOLD LINE */
+.profile-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(28px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── HEADER ── */
+.card-header{
+  text-align:center;
+  margin-bottom:36px;
+}
+
+.card-eyebrow{
+  font-size:11px;font-weight:500;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:12px;
+}
+
+.card-eyebrow::before,
+.card-eyebrow::after{
+  content:'';display:block;
+  width:28px;height:1px;background:var(--gold);
+}
+
+.card-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:300;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+  line-height:1.1;
+}
+
+/* ── DIVIDER ── */
+.luxury-divider{
+  display:flex;align-items:center;gap:10px;
+  margin:0 0 32px;
+}
+
+.luxury-divider span{display:block;height:1px;background:var(--border);flex:1;}
+.luxury-divider i{
+  display:block;width:5px;height:5px;
+  border:1px solid var(--gold);
+  transform:rotate(45deg);flex-shrink:0;
+}
+
+/* ── FORM FIELDS ── */
+/* Override Django's default p wrapping */
+.profile-card form p{
+  margin-bottom:20px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.profile-card form p label{
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--stone);
+}
+
+.profile-card form p input,
+.profile-card form p select,
+.profile-card form p textarea{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-radius:2px;
+  background:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  color:var(--ink);
+  outline:none;
+  transition:border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  -webkit-appearance:none;
+}
+
+.profile-card form p input:focus,
+.profile-card form p select:focus,
+.profile-card form p textarea:focus{
+  border-color:var(--gold);
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(184,150,90,0.1);
+}
+
+/* File input special */
+.profile-card form p input[type="file"]{
+  padding:10px 14px;
+  background:var(--cream-dark);
+  cursor:pointer;
+  font-size:13px;
+  color:var(--stone);
+}
+
+.profile-card form p input[type="file"]::-webkit-file-upload-button{
+  background:var(--ink);
+  color:#fff;
+  border:none;
+  padding:6px 14px;
+  border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background 0.2s;
+  margin-right:12px;
+}
+
+.profile-card form p input[type="file"]::-webkit-file-upload-button:hover{
+  background:var(--ink-soft);
+}
+
+/* Checkbox */
+.profile-card form p input[type="checkbox"]{
+  width:auto;
+  accent-color:var(--gold);
+  width:16px;height:16px;
+  cursor:pointer;
+}
+
+/* Help text */
+.profile-card form p .helptext,
+.profile-card form p span.helptext{
+  font-size:11px;color:var(--stone);
+  letter-spacing:0.02em;
+  line-height:1.5;
+}
+
+/* Error text */
+.profile-card form p .errorlist,
+.profile-card form ul.errorlist{
+  list-style:none;
+  font-size:12px;
+  color:var(--danger);
+  padding:0;
+}
+
+/* ── AVATAR PREVIEW ── */
+.avatar-section{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  margin-bottom:28px;
+}
+
+.avatar-wrap{
+  width:88px;height:88px;
+  border-radius:50%;
+  border:2px solid var(--border);
+  overflow:hidden;
+  background:var(--cream-dark);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:border-color 0.3s;
+}
+
+.avatar-wrap:hover{border-color:var(--gold);}
+
+.avatar-wrap img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+
+.avatar-initials{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-weight:300;
+  color:var(--stone);
+}
+
+.avatar-hint{
+  font-size:11px;color:var(--stone);
+  letter-spacing:0.06em;
+  text-align:center;
+}
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn{
+  width:100%;
+  padding:15px;
+  background:var(--ink);
+  color:#fff;
+  border:none;
+  border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:500;
+  letter-spacing:0.16em;text-transform:uppercase;
+  cursor:pointer;
+  margin-top:8px;
+  transition:background 0.3s, transform 0.3s, box-shadow 0.3s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+
+.submit-btn:hover{
+  background:var(--ink-soft);
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(14,14,14,0.16);
+}
+
+.submit-btn:active{transform:translateY(0);}
+
+/* ── BACK LINK ── */
+.back-link{
+  display:block;
+  text-align:center;
+  margin-top:16px;
+  font-size:12px;color:var(--stone);
+  text-decoration:none;
+  letter-spacing:0.08em;
+  transition:color 0.2s;
+}
+
+.back-link:hover{color:var(--gold);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;top:24px;right:24px;z-index:9999;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;border-radius:4px;
+  font-size:13px;font-weight:500;letter-spacing:0.04em;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  opacity:0;transform:translateY(-12px) scale(0.97);
+  transition:all 0.4s cubic-bezier(0.22,1,0.36,1);
+  pointer-events:none;max-width:320px;background:#fff;
+}
+.toast.show{opacity:1;transform:translateY(0) scale(1);}
+.toast.success{border-left:3px solid var(--gold);color:var(--ink);}
+.toast.error{border-left:3px solid var(--danger);color:var(--ink);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:560px){
+  .profile-card{padding:36px 24px;}
+  .card-title{font-size:28px;}
+}
+</style>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg"></span>
+</div>
+
+<div class="ambient"></div>
+
+<div class="profile-page">
+  <div class="profile-card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+      <p class="card-eyebrow">Account</p>
+      <h1 class="card-title">Edit Profile</h1>
+    </div>
+
+    <div class="luxury-divider"><span></span><i></i><span></span></div>
+
+    <!-- AVATAR PREVIEW -->
+    <div class="avatar-section">
+      <div class="avatar-wrap" id="avatarWrap">
+        {% if request.user.profile.image %}
+          <img src="{{ request.user.profile.image.url }}" alt="Avatar" id="avatarImg">
+        {% else %}
+          <span class="avatar-initials" id="avatarInitials">
+            {{ request.user.username|first|upper }}
+          </span>
+        {% endif %}
+      </div>
+      <span class="avatar-hint">Click "Choose File" below to update photo</span>
+    </div>
+
+    <!-- FORM -->
+    <form method="POST" enctype="multipart/form-data" id="profileForm">
+      {% csrf_token %}
+
+      {{ form.as_p }}
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Changes
+      </button>
+    </form>
+
+    <a href="{% url 'profile' %}" class="back-link">← Back to Profile</a>
+
+  </div>
+</div>
+
+<script>
+/* ── AVATAR LIVE PREVIEW ── */
+const fileInputs = document.querySelectorAll('input[type="file"]');
+fileInputs.forEach(input => {
+  input.addEventListener('change', function(){
+    const file = this.files[0];
+    if(!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.getElementById('avatarWrap');
+      wrap.innerHTML = `<img src="${e.target.result}" alt="Preview" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+/* ── SUBMIT LOADING STATE ── */
+document.getElementById('profileForm')?.addEventListener('submit', function(){
+  const btn = document.getElementById('submitBtn');
+  btn.style.opacity = '0.75';
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="animation:spin 0.7s linear infinite">
+      <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+    </svg>
+    Saving...
+  `;
+});
+
+/* ── TOAST ── */
+function showToast(msg, type='success'){
+  const toast = document.getElementById('toast');
+  const icons = {success:'✓', error:'✕'};
+  toast.className = `toast ${type}`;
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = icons[type] || '✓';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// {% if messages %}
+//   {% for message in messages %}
+//     {% if message.tags == 'success' %}
+//       showToast("{{ message }}", 'success');
+//     {% elif message.tags == 'error' %}
+//       showToast("{{ message }}", 'error');
+//     {% else %}
+//       showToast("{{ message }}", 'success');
+//     {% endif %}
+//   {% endfor %}
+// {% endif %}
+
+/* ── SPIN KEYFRAME ── */
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg);}}';
+document.head.appendChild(style);
+</script>
+
+{% endblock %}
